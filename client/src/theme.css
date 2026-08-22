@@ -1,0 +1,430 @@
+/* ============================================================
+   Udhaar theme
+   Built entirely on top of Bootstrap 5's utility classes and CSS
+   variables - no extra UI library. Two Google fonts (Poppins for
+   headings, Inter for body text) plus Bootstrap Icons are loaded
+   via CDN links in public/index.html.
+   ============================================================ */
+
+:root {
+  --udhaar-primary: #2f6f4f;
+  --udhaar-primary-dark: #1f4d36;
+  --udhaar-primary-light: #e8f3ee;
+  --udhaar-accent: #d97706;
+  --udhaar-danger: #dc2626;
+  --udhaar-radius: 1rem;
+  --udhaar-radius-sm: 0.65rem;
+  --udhaar-radius-lg: 1.4rem;
+  --udhaar-shadow: 0 2px 12px rgba(15, 23, 42, 0.06);
+  --udhaar-shadow-hover: 0 10px 24px rgba(15, 23, 42, 0.12);
+  --udhaar-border: rgba(15, 23, 42, 0.08);
+}
+
+[data-bs-theme="dark"] {
+  --udhaar-primary-light: rgba(47, 111, 79, 0.18);
+  --udhaar-shadow: 0 2px 12px rgba(0, 0, 0, 0.45);
+  --udhaar-shadow-hover: 0 10px 24px rgba(0, 0, 0, 0.55);
+  --udhaar-border: rgba(255, 255, 255, 0.08);
+}
+
+body {
+  background-color: var(--bs-body-bg);
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  transition: background-color 0.2s ease;
+}
+
+h1, h2, h3, h4, h5, h6,
+.udhaar-heading {
+  font-family: "Poppins", "Inter", sans-serif;
+}
+
+/* ---------------------------------------------------------- */
+/* Navbar                                                       */
+/* ---------------------------------------------------------- */
+.udhaar-navbar {
+  box-shadow: var(--udhaar-shadow);
+  padding-top: 0.6rem;
+  padding-bottom: 0.6rem;
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+}
+
+.udhaar-brand {
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  font-size: 1.35rem;
+  color: var(--udhaar-primary) !important;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.udhaar-brand .bi {
+  font-size: 1.5rem;
+}
+
+.udhaar-avatar {
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 50%;
+  background: var(--udhaar-primary);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.udhaar-icon-btn {
+  border: none;
+  background: transparent;
+  color: var(--bs-body-color);
+  font-size: 1.25rem;
+  position: relative;
+  padding: 0.35rem 0.6rem;
+  border-radius: 50%;
+}
+
+.udhaar-icon-btn:hover {
+  background: var(--udhaar-primary-light);
+}
+
+.udhaar-badge-dot {
+  position: absolute;
+  top: 0.15rem;
+  right: 0.2rem;
+  background: var(--udhaar-danger);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 0.62rem;
+  min-width: 1.05rem;
+  height: 1.05rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  padding: 0 0.15rem;
+}
+
+.udhaar-notif-dropdown {
+  width: 340px;
+  max-height: 420px;
+  overflow-y: auto;
+  padding: 0.5rem;
+}
+
+.udhaar-notif-item {
+  border-radius: var(--udhaar-radius-sm);
+  padding: 0.6rem 0.7rem;
+  cursor: pointer;
+}
+
+.udhaar-notif-item:hover {
+  background: var(--udhaar-primary-light);
+}
+
+.udhaar-notif-item.unread {
+  background: var(--udhaar-primary-light);
+  font-weight: 500;
+}
+
+/* ---------------------------------------------------------- */
+/* Page shell                                                    */
+/* ---------------------------------------------------------- */
+.udhaar-page {
+  padding-top: 1.75rem;
+  padding-bottom: 3rem;
+  max-width: 1000px;
+}
+
+.udhaar-section-title {
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.udhaar-subtitle {
+  color: var(--bs-secondary-color);
+  margin-bottom: 1.5rem;
+}
+
+.udhaar-hero {
+  background: linear-gradient(135deg, var(--udhaar-primary) 0%, var(--udhaar-primary-dark) 100%);
+  border-radius: var(--udhaar-radius-lg);
+  color: #fff;
+  padding: 1.75rem 2rem;
+  margin-bottom: 1.75rem;
+  box-shadow: var(--udhaar-shadow-hover);
+}
+
+.udhaar-hero h2 {
+  font-weight: 700;
+  margin-bottom: 0.15rem;
+}
+
+.udhaar-hero p {
+  opacity: 0.85;
+  margin-bottom: 0;
+}
+
+/* ---------------------------------------------------------- */
+/* Cards                                                         */
+/* ---------------------------------------------------------- */
+.card {
+  border: 1px solid var(--udhaar-border);
+  border-radius: var(--udhaar-radius);
+  box-shadow: var(--udhaar-shadow);
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.udhaar-clickable-card {
+  cursor: pointer;
+}
+
+.udhaar-clickable-card:hover {
+  box-shadow: var(--udhaar-shadow-hover);
+  transform: translateY(-2px);
+}
+
+.udhaar-group-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 1rem;
+}
+
+.udhaar-group-card {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  height: 100%;
+}
+
+.udhaar-group-icon {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--udhaar-radius-sm);
+  background: var(--udhaar-primary-light);
+  color: var(--udhaar-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+}
+
+.udhaar-group-title {
+  font-weight: 600;
+  font-size: 1.05rem;
+  margin-bottom: 0;
+}
+
+.udhaar-group-meta {
+  color: var(--bs-secondary-color);
+  font-size: 0.85rem;
+}
+
+.udhaar-create-tile {
+  border: 2px dashed var(--udhaar-border);
+  border-radius: var(--udhaar-radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-height: 130px;
+  color: var(--bs-secondary-color);
+  background: transparent;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.udhaar-create-tile:hover {
+  border-color: var(--udhaar-primary);
+  color: var(--udhaar-primary);
+}
+
+.udhaar-create-tile .bi {
+  font-size: 1.6rem;
+}
+
+/* Record cards */
+.record-card {
+  width: 100%;
+}
+
+.record-card .card-body {
+  padding: 1.1rem 1.35rem;
+}
+
+.record-card.own-record {
+  border-left: 3px solid var(--udhaar-primary);
+}
+
+.record-avatar-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.record-amount {
+  font-size: 1.35rem;
+  font-weight: 700;
+  font-family: "Poppins", sans-serif;
+}
+
+.record-amount.owe {
+  color: var(--udhaar-danger);
+}
+
+.record-amount.owed {
+  color: var(--udhaar-primary);
+}
+
+/* ---------------------------------------------------------- */
+/* Buttons & forms                                               */
+/* ---------------------------------------------------------- */
+.btn {
+  border-radius: var(--udhaar-radius-sm);
+  font-weight: 500;
+}
+
+.btn-primary {
+  background-color: var(--udhaar-primary);
+  border-color: var(--udhaar-primary);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: var(--udhaar-primary-dark);
+  border-color: var(--udhaar-primary-dark);
+}
+
+.btn-outline-success {
+  --bs-btn-color: var(--udhaar-primary);
+  --bs-btn-border-color: var(--udhaar-primary);
+  --bs-btn-hover-bg: var(--udhaar-primary);
+  --bs-btn-hover-border-color: var(--udhaar-primary);
+}
+
+.btn-fab {
+  width: 3.2rem;
+  height: 3.2rem;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  box-shadow: var(--udhaar-shadow-hover);
+}
+
+.form-control,
+.form-select {
+  border-radius: var(--udhaar-radius-sm);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--udhaar-primary);
+  box-shadow: 0 0 0 0.2rem rgba(47, 111, 79, 0.15);
+}
+
+.form-check-input:checked {
+  background-color: var(--udhaar-primary);
+  border-color: var(--udhaar-primary);
+}
+
+/* Modals */
+.modal-content {
+  border: none;
+  border-radius: var(--udhaar-radius);
+  box-shadow: var(--udhaar-shadow-hover);
+}
+
+/* Badges */
+.badge.text-bg-success {
+  background-color: var(--udhaar-primary) !important;
+}
+
+/* Auth pages */
+.udhaar-auth-card {
+  max-width: 420px;
+  margin: 2.5rem auto;
+}
+
+.udhaar-auth-icon {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  background: var(--udhaar-primary-light);
+  color: var(--udhaar-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  margin: 0 auto 0.75rem auto;
+}
+
+/* Tabs used on Records page (All / Mine) */
+.udhaar-tab-btn {
+  border-radius: 999px;
+  padding: 0.35rem 1rem;
+  font-size: 0.9rem;
+  border: 1px solid var(--udhaar-border);
+  background: transparent;
+  color: var(--bs-body-color);
+}
+
+.udhaar-tab-btn.active {
+  background: var(--udhaar-primary);
+  border-color: var(--udhaar-primary);
+  color: #fff;
+}
+
+/* History timeline */
+.udhaar-history-item {
+  border-left: 2px solid var(--udhaar-border);
+  padding-left: 1rem;
+  padding-bottom: 1.25rem;
+  position: relative;
+}
+
+.udhaar-history-item::before {
+  content: "";
+  position: absolute;
+  left: -0.4rem;
+  top: 0.2rem;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  background: var(--udhaar-primary);
+}
+
+.udhaar-empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--bs-secondary-color);
+}
+
+.udhaar-empty-state .bi {
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+  display: block;
+  color: var(--udhaar-border);
+}
+
+@media (max-width: 576px) {
+  .udhaar-auth-card {
+    margin: 1rem auto;
+  }
+
+  .udhaar-hero {
+    padding: 1.25rem 1.4rem;
+  }
+
+  .udhaar-notif-dropdown {
+    width: 90vw;
+  }
+}
