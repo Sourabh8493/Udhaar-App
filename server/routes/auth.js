@@ -26,7 +26,7 @@ const sendOtpEmail = async (to, otp, purpose) => {
     const subject = purpose === "reset" ? "Udhaar - Password Reset OTP" : "Udhaar - Verify your email"
     const text = `Your OTP is ${otp}. It will expire in 10 minutes. If you did not request this, you can safely ignore this email.`
     try {
-        await sendEmailResend({ to, subject, text })
+        await sendEmail({ to, subject, text })
     } catch (error) {
         console.log("Failed to send OTP email:", error.message)
     }
