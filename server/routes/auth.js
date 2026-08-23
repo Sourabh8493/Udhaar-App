@@ -9,6 +9,7 @@ const generateOtp = require("../utils/generateOtp")
 const sendEmail = require("../utils/sendEmail")
 const Group = require("../models/Group")
 const Record = require("../models/Record")
+const sendEmailResend = require("../utils/sendEmailResend")
 
 const JWT_SECRET = process.env.JWT_SECRET
 const JWT_EXPIRE = process.env.JWT_EXPIRE || "7d"
@@ -25,7 +26,7 @@ const sendOtpEmail = async (to, otp, purpose) => {
     const subject = purpose === "reset" ? "Udhaar - Password Reset OTP" : "Udhaar - Verify your email"
     const text = `Your OTP is ${otp}. It will expire in 10 minutes. If you did not request this, you can safely ignore this email.`
     try {
-        await sendEmail({ to, subject, text })
+        await sendEmailResend({ to, subject, text })
     } catch (error) {
         console.log("Failed to send OTP email:", error.message)
     }
