@@ -387,4 +387,19 @@ router.delete("/deleteAccount", fetchuser, async (req, res) => {
     }
 })
 
+router.get("/test-email", async (req, res) => {
+  try {
+    await sendEmail({
+      to: "sourabhsontakke28@gmail.com",
+      subject: "Test Email",
+      text: "Testing email",
+    });
+
+    res.send("Email sent");
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err.message);
+  }
+});
+
 module.exports = router
