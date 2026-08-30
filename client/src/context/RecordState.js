@@ -65,12 +65,20 @@ const RecordState = (props) => {
     }
   };
 
+  // The actual network call, with no refetch attached - addRecord (single)
+  // and addAllRecord (split) both build on this, so a split with several
+  // people doesn't end up doing a full record refetch after every single
+  // one of them.
+  const postRecord = (to, amount, note, groupid) => {
+    return apiRequest("/api/records/addrecord", {
+      method: "POST",
+      body: { to, amount, note, groupid },
+    });
+  };
+
   const addRecord = async (to, amount, note, groupid) => {
     try {
-      await apiRequest("/api/records/addrecord", {
-        method: "POST",
-        body: { to, amount, note, groupid },
-      });
+      await postRecord(to, amount, note, groupid);
       await getRecords(groupid);
       return true;
     } catch (error) {
@@ -95,14 +103,17 @@ const RecordState = (props) => {
     }
 
     try {
-      for (let i = 0; i < members.length; i++) {
-        await addRecord(members[i].email, roundedAmount, note, groupid);
-      }
+      // Fire all the individual record creations in parallel and refetch
+      // once at the end, instead of doing them one-by-one with a full
+      // refetch after each - that turned a 5-person split into ~11
+      // sequential round trips.
+      await Promise.all(members.map((m) => postRecord(m.email, roundedAmount, note, groupid)));
       await getRecords(groupid);
       showAlert("Record added successfully!", "success");
       return true;
     } catch (error) {
       showAlert(error.message, "danger");
+      await getRecords(groupid);
       return false;
     }
   };

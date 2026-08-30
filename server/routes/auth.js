@@ -9,6 +9,7 @@ const generateOtp = require("../utils/generateOtp")
 const sendEmail = require("../utils/sendEmail")
 const Group = require("../models/Group")
 const Record = require("../models/Record")
+const History = require("../models/History")
 const sendEmailResend = require("../utils/sendEmailResend")
 
 const JWT_SECRET = process.env.JWT_SECRET
@@ -301,11 +302,34 @@ router.put("/updateProfile", fetchuser, [
     }
 
     try {
+        const newName = req.body.name.trim()
         const user = await User.findByIdAndUpdate(
             req.user.id,
-            { $set: { name: req.body.name.trim() } },
+            { $set: { name: newName } },
             { new: true }
         ).select("-password -otp -otpExpiry -resetOtp -resetOtpExpiry")
+
+        if (!user) {
+            return res.status(404).json({success:false, error: "User not found"})
+        }
+
+        // Group.members and Record/History from/to are stored as
+        // {email, name} snapshots rather than references, so they don't
+        // automatically pick up a name change - update every copy here.
+        // This also keeps the "who's in this group" queries working:
+        // they match members by email, but a stale name copy would make
+        // the group card and record labels show the old name forever.
+        await Promise.all([
+            Group.updateMany(
+                { "members.email": user.email },
+                { $set: { "members.$[elem].name": newName } },
+                { arrayFilters: [{ "elem.email": user.email }] }
+            ),
+            Record.updateMany({ "from.email": user.email }, { $set: { "from.name": newName } }),
+            Record.updateMany({ "to.email": user.email }, { $set: { "to.name": newName } }),
+            History.updateMany({ "from.email": user.email }, { $set: { "from.name": newName } }),
+            History.updateMany({ "to.email": user.email }, { $set: { "to.name": newName } }),
+        ])
 
         res.json({success:true, user})
     } catch (error) {
@@ -390,7 +414,7 @@ router.delete("/deleteAccount", fetchuser, async (req, res) => {
 
 router.get("/test-email", async (req, res) => {
   try {
-    await sendEmail({
+    await sendEmailResend({
       to: "sourabhsontakke28@gmail.com",
       subject: "Test Email",
       text: "Testing email",

@@ -83,6 +83,7 @@ const Navbar = () => {
                   type="button"
                   className="udhaar-icon-btn"
                   data-bs-toggle="dropdown"
+                  data-bs-display="static"
                   aria-expanded="false"
                   aria-label="Notifications"
                   title="Notifications"

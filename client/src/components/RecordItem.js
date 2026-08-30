@@ -24,7 +24,10 @@ const RecordItem = (props) => {
   const isMine = currentUser.email === record.from.email || currentUser.email === record.to.email
   const isCreator = currentUser && record.user === currentUser._id
   const isRecipient = currentUser.email === record.to.email
-  const canSettle = record.status === "confirmed" && (isCreator || isRecipient)
+  // Only the creator - the person who is owed the money - can mark a
+  // record as Done. The recipient (who owes the money) shouldn't be
+  // able to unilaterally declare their own debt settled.
+  const canSettle = record.status === "confirmed" && isCreator
 
   const handleDeleteClick = async () => {
     if (!window.confirm("Remove this record? This cannot be undone.")) {

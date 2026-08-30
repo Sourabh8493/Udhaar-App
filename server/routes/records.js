@@ -14,17 +14,17 @@ router.get("/fetchallrecords/:grpid", fetchuser, async (req, res) => {
     const group = await Group.findById(req.params.grpid);
 
     if (!group) {
-      return res.status(404).send("Group not found");
+      return res.status(404).json({ error: "Group not found" });
     }
     if (!user || !group.members.some((m) => m.email === user.email)) {
-      return res.status(403).send("You are not a member of this group");
+      return res.status(403).json({ error: "You are not a member of this group" });
     }
 
     const records = await Record.find({ groupid: req.params.grpid });
     res.json(records);
   } catch (error) {
     console.log(error.message);
-    res.status(500).send("Some error occurred");
+    res.status(500).json({ error: "Some error occurred" });
   }
 });
 
@@ -34,17 +34,17 @@ router.get("/history/:grpid", fetchuser, async (req, res) => {
     const group = await Group.findById(req.params.grpid);
 
     if (!group) {
-      return res.status(404).send("Group not found");
+      return res.status(404).json({ error: "Group not found" });
     }
     if (!user || !group.members.some((m) => m.email === user.email)) {
-      return res.status(403).send("You are not a member of this group");
+      return res.status(403).json({ error: "You are not a member of this group" });
     }
 
     const history = await History.find({ groupid: req.params.grpid }).sort({ settledDate: -1 });
     res.json(history);
   } catch (error) {
     console.log(error.message);
-    res.status(500).send("Some error occurred");
+    res.status(500).json({ error: "Some error occurred" });
   }
 });
 
@@ -112,21 +112,21 @@ router.delete("/deleterecord/:id",fetchuser, async (req, res) => {
     var record = await Record.findById(req.params.id)
 
     if (!record) {
-      return res.status(404).send("Record not found")
+      return res.status(404).json({ error: "Record not found" })
     }
 
     if (record.user.toString() !== req.user.id) {
-      return res.status(403).send("Please authenticate with valid credentials")
+      return res.status(403).json({ error: "Please authenticate with valid credentials" })
     }
     if (record.status === "confirmed") {
-      return res.status(400).send("This record is confirmed - mark it as Done to settle it instead of deleting it")
+      return res.status(400).json({ error: "This record is confirmed - mark it as Done to settle it instead of deleting it" })
     }
 
     record = await Record.findByIdAndDelete(req.params.id)
     res.json({"message":"Deleted Successfully", "record":record})
   } catch(error) {
     console.log(error.message)
-    res.status(500).send("Some error occurred")
+    res.status(500).json({ error: "Some error occurred" })
   }
 })
 
@@ -136,13 +136,13 @@ router.delete("/declinerecord/:id",fetchuser, async (req, res) => {
     var record = await Record.findById(req.params.id)
 
     if (!record) {
-      return res.status(404).send("Record not found")
+      return res.status(404).json({ error: "Record not found" })
     }
     if (!user || record.to.email !== user.email) {
-      return res.status(403).send("Only the recipient of this record can decline it")
+      return res.status(403).json({ error: "Only the recipient of this record can decline it" })
     }
     if (record.status !== "pending") {
-      return res.status(400).send("Only pending records can be declined")
+      return res.status(400).json({ error: "Only pending records can be declined" })
     }
 
     record = await Record.findByIdAndDelete(req.params.id)
@@ -155,7 +155,7 @@ router.delete("/declinerecord/:id",fetchuser, async (req, res) => {
     res.json({"message":"Deleted Successfully", "record":record})
   } catch(error) {
     console.log(error.message)
-    res.status(500).send("Some error occurred")
+    res.status(500).json({ error: "Some error occurred" })
   }
 })
 
@@ -168,13 +168,13 @@ router.put("/settlerecord/:id", fetchuser, async (req, res) => {
     const record = await Record.findById(req.params.id);
 
     if (!record) {
-      return res.status(404).send("Record not found");
+      return res.status(404).json({ error: "Record not found" });
     }
-    if (!user || (record.user.toString() !== req.user.id && record.to.email !== user.email)) {
-      return res.status(403).send("Only the people involved in this record can settle it");
+    if (!user || record.user.toString() !== req.user.id) {
+      return res.status(403).json({ error: "Only the person who created the record can mark it as done" });
     }
     if (record.status !== "confirmed") {
-      return res.status(400).send("Only confirmed records can be settled");
+      return res.status(400).json({ error: "Only confirmed records can be settled" });
     }
 
     await History.create({
@@ -189,13 +189,12 @@ router.put("/settlerecord/:id", fetchuser, async (req, res) => {
 
     await Record.findByIdAndDelete(req.params.id);
 
-    const otherPartyEmail = user.email === record.from.email ? record.to.email : record.from.email;
-    await notify(otherPartyEmail, `The record of ₹${record.amount} with ${user.name} was marked as settled`, "record_settled", record.groupid);
+    await notify(record.to.email, `${user.name} marked the record of ₹${record.amount} as settled`, "record_settled", record.groupid);
 
     res.json({ message: "Settled successfully" });
   } catch (error) {
     console.log(error.message);
-    res.status(500).send("Some error occurred");
+    res.status(500).json({ error: "Some error occurred" });
   }
 });
 
@@ -206,24 +205,24 @@ router.put("/updaterecord/:id", fetchuser, async (req, res) => {
 
     var record = await Record.findById(req.params.id);
     if (!record) {
-      return res.status(404).send("Record not found");
+      return res.status(404).json({ error: "Record not found" });
     }
 
     // Confirming/declining a debt is the recipient's call; editing the
     // record's own details stays with whoever created it.
     if (status) {
       if (!user || record.to.email !== user.email) {
-        return res.status(403).send("Only the recipient can confirm this record");
+        return res.status(403).json({ error: "Only the recipient can confirm this record" });
       }
       if (record.status === "confirmed") {
-        return res.status(400).send("This record is already settled");
+        return res.status(400).json({ error: "This record is already settled" });
       }
     } else {
       if (record.user.toString() !== req.user.id) {
-        return res.status(403).send("Not allowed to edit this record");
+        return res.status(403).json({ error: "Not allowed to edit this record" });
       }
       if (record.status !== "pending") {
-        return res.status(400).send("Only pending records can be edited");
+        return res.status(400).json({ error: "Only pending records can be edited" });
       }
     }
 

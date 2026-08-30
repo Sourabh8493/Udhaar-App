@@ -8,11 +8,10 @@ const RecordSchema = new Schema({
   amount: { type: Number, required: true, min: 0.01 },
   note: { type: String, default: "General", trim: true },
   status: {type: String, default: "pending"},
-  groupid: { type: String, required: true},
+  groupid: { type: String, required: true, index: true },
   date: { type: Date, default: Date.now },
 });
 
 const Record = mongoose.model("record", RecordSchema);
-Record.createIndexes();
 
 module.exports = Record;

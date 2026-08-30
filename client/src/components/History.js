@@ -65,7 +65,9 @@ const History = () => {
             <div className="udhaar-history-item" key={item._id}>
               <div className="d-flex justify-content-between align-items-start flex-wrap gap-1">
                 <div>
-                  <strong>{item.from.name}</strong> paid <strong>{item.to.name}</strong>
+                  {/* record.to owes record.from (the creator) - so it's
+                      "to" who actually paid "from" when this was settled. */}
+                  <strong>{item.to.name}</strong> paid <strong>{item.from.name}</strong>
                   <div className="text-muted small">{item.note}</div>
                 </div>
                 <span className="record-amount owed">₹{item.amount}</span>

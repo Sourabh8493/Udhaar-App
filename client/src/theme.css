@@ -425,6 +425,12 @@ h1, h2, h3, h4, h5, h6,
   }
 
   .udhaar-notif-dropdown {
-    width: 90vw;
+    position: fixed !important;
+    top: 3.75rem !important;
+    left: 0.75rem !important;
+    right: 0.75rem !important;
+    width: auto !important;
+    max-width: none;
+    max-height: 70vh;
   }
 }
