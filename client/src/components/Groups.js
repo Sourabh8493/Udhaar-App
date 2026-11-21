@@ -3,6 +3,7 @@ import GroupItem from "./GroupItem";
 import GroupContext from "../context/GroupContext";
 import { useNavigate } from "react-router-dom";
 import CreateGroup from "./CreateGroup";
+import { isSessionValid, clearAuthSession } from "../utils/api";
 
 const Groups = () => {
   const groupContext = useContext(GroupContext);
@@ -14,11 +15,17 @@ const Groups = () => {
 
   useEffect(() => {
     const load = async () => {
-      if (localStorage.getItem("token")) {
+      if (isSessionValid()) {
         setIsLoading(true);
-        await Promise.all([getGroups(), getUserDetails()]);
-        setIsLoading(false);
+        try {
+          await Promise.all([getGroups(), getUserDetails()]);
+        } catch (error) {
+          console.error("Error loading groups:", error);
+        } finally {
+          setIsLoading(false);
+        }
       } else {
+        clearAuthSession();
         navigate("/login");
       }
     };

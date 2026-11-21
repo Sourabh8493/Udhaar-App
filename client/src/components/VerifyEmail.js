@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import AlertContext from "../context/AlertContext";
-import { apiRequest } from "../utils/api";
+import { apiRequest, setAuthSession } from "../utils/api";
 
 const VerifyEmail = () => {
   const location = useLocation();
@@ -22,7 +22,7 @@ const VerifyEmail = () => {
         auth: false,
         body: { email, otp },
       });
-      localStorage.setItem("token", json.authToken);
+      setAuthSession(json.authToken);
       showAlert("Email verified! Welcome to Udhaar.", "success");
       navigate("/");
     } catch (error) {

@@ -20,6 +20,7 @@ const AddRecord = () => {
   const [mode, setMode] = useState("single");
   const [record, setRecord] = useState({ to: "", amount: "", note: "" });
   const [selectedEmails, setSelectedEmails] = useState([]);
+  const [includeMe, setIncludeMe] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const ref = useRef();
@@ -65,7 +66,7 @@ const AddRecord = () => {
         setIsSubmitting(false);
         return;
       }
-      success = await addAllRecord(chosen, amount, record.note.trim(), groupid);
+      success = await addAllRecord(chosen, amount, record.note.trim(), groupid, includeMe);
     }
 
     setIsSubmitting(false);
@@ -73,6 +74,7 @@ const AddRecord = () => {
     if (success) {
       setRecord({ to: "", amount: "", note: "" });
       setSelectedEmails([]);
+      setIncludeMe(true);
       setMode("single");
       ref.current.click();
     }
@@ -184,8 +186,23 @@ const AddRecord = () => {
                       </div>
                     ))
                   )}
+                  <div className="form-check mt-3 pt-2 border-top">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      id="includeMe"
+                      checked={includeMe}
+                      onChange={(e) => setIncludeMe(e.target.checked)}
+                    />
+                    <label className="form-check-label fw-medium" htmlFor="includeMe">
+                      Include Me
+                    </label>
+                  </div>
+
                   <div className="form-text">
-                    The amount will be split evenly between you and everyone selected.
+                    {includeMe
+                      ? "The amount will be split evenly between you and everyone selected."
+                      : "The amount will be split evenly between selected members only (excluding you)."}
                   </div>
                 </div>
               )}

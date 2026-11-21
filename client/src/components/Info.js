@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import GroupContext from "../context/GroupContext";
 import AlertContext from "../context/AlertContext";
+import { isSessionValid, clearAuthSession } from "../utils/api";
 
 const Info = () => {
   const navigate = useNavigate();
@@ -17,7 +18,8 @@ const Info = () => {
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
-    if (!localStorage.getItem("token")) {
+    if (!isSessionValid()) {
+      clearAuthSession();
       navigate("/login");
       return;
     }
@@ -73,18 +75,18 @@ const Info = () => {
     const success = await deleteAccount();
     setIsDeleting(false);
     if (success) {
-      localStorage.removeItem("token");
+      clearAuthSession();
       navigate("/login");
     }
   };
 
-  const initials = currentUser && currentUser.name ? currentUser.name.charAt(0).toUpperCase() : "?";
+  const initials = currentUser && currentUser.name ? currentUser.name.charAt(0).toUpperCase() : "";
 
   return (
     <div className="container udhaar-page">
       <div className="d-flex align-items-center gap-3 mb-4">
         <span className="udhaar-avatar" style={{ width: "3.5rem", height: "3.5rem", fontSize: "1.4rem" }}>
-          {initials}
+          {initials || <i className="bi bi-person"></i>}
         </span>
         <div>
           <h2 className="udhaar-section-title mb-0">{currentUser.name || "Your profile"}</h2>

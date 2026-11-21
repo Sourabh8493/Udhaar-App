@@ -13,7 +13,7 @@ const History = require("../models/History")
 const sendEmailResend = require("../utils/sendEmailResend")
 
 const JWT_SECRET = process.env.JWT_SECRET
-const JWT_EXPIRE = process.env.JWT_EXPIRE || "7d"
+const JWT_EXPIRE = process.env.JWT_EXPIRE || "10d"
 const OTP_TTL_MS = 10 * 60 * 1000 // 10 minutes
 
 const signToken = (userId) => {
@@ -268,7 +268,8 @@ router.post("/getUser", fetchuser, async (req, res) => {
         if (!user) {
             return res.status(404).json({error: "User not found"})
         }
-        res.json(user)
+        const authToken = signToken(user.id)
+        res.json({ ...user.toObject(), authToken })
     } catch (error) {
         console.log(error.message);
         res.status(500).json({error: "Some error occured"})

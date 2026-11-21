@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import ThemeContext from "../context/ThemeContext";
 import GroupContext from "../context/GroupContext";
 import NotificationContext from "../context/NotificationContext";
+import { isSessionValid, clearAuthSession } from "../utils/api";
 
 const timeAgo = (dateStr) => {
   const seconds = Math.floor((new Date() - new Date(dateStr)) / 1000);
@@ -21,7 +22,7 @@ const Navbar = () => {
   const { currentUser } = useContext(GroupContext)
   const { notifications, unreadCount, getNotifications, markRead, markAllRead } = useContext(NotificationContext)
 
-  const isLoggedIn = !!localStorage.getItem("token")
+  const isLoggedIn = isSessionValid()
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -31,11 +32,11 @@ const Navbar = () => {
   }, [isLoggedIn])
 
   const handleLogout = () => {
-    localStorage.removeItem("token")
+    clearAuthSession()
     navigate("/login")
   }
 
-  const initials = currentUser && currentUser.name ? currentUser.name.charAt(0).toUpperCase() : "?"
+  const initials = currentUser && currentUser.name ? currentUser.name.charAt(0).toUpperCase() : ""
 
   return (
     <div>
@@ -133,7 +134,7 @@ const Navbar = () => {
                   data-bs-toggle="dropdown"
                   aria-expanded="false"
                 >
-                  <span className="udhaar-avatar">{initials}</span>
+                  <span className="udhaar-avatar">{initials || <i className="bi bi-person"></i>}</span>
                 </button>
                 <ul className="dropdown-menu dropdown-menu-end">
                   <li>

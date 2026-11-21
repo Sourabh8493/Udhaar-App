@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AlertContext from "../context/AlertContext";
-import { apiRequest } from "../utils/api";
+import { apiRequest, setAuthSession } from "../utils/api";
 
 const Login = () => {
   const [credentials, setCredentials] = useState({ email: "", password: "" });
@@ -19,7 +19,7 @@ const Login = () => {
         body: { email: credentials.email, password: credentials.password },
       });
 
-      localStorage.setItem("token", json.authToken)
+      setAuthSession(json.authToken)
       navigate("/")
       showAlert("Logged In Successfully!", "success")
     } catch (error) {

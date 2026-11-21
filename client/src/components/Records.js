@@ -5,6 +5,7 @@ import { useNavigate, useParams, Link } from "react-router-dom";
 import GroupContext from "../context/GroupContext";
 import AddRecord from "./AddRecord";
 import Optimize from "./Optimize";
+import { isSessionValid, clearAuthSession } from "../utils/api";
 
 const Records = () => {
   const recordContext = useContext(RecordContext);
@@ -60,11 +61,17 @@ const Records = () => {
 
   useEffect(() => {
     const load = async () => {
-      if (localStorage.getItem("token")) {
+      if (isSessionValid()) {
         setIsLoading(true);
-        await Promise.all([getRecords(groupid), getUserDetails(), getGroup(groupid)]);
-        setIsLoading(false);
+        try {
+          await Promise.all([getRecords(groupid), getUserDetails(), getGroup(groupid)]);
+        } catch (error) {
+          console.error("Error loading records:", error);
+        } finally {
+          setIsLoading(false);
+        }
       } else {
+        clearAuthSession();
         navigate("/login");
       }
     };

@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import RecordContext from "../context/RecordContext";
 import GroupContext from "../context/GroupContext";
+import { isSessionValid, clearAuthSession } from "../utils/api";
 
 const formatDate = (dateStr) => {
   return new Date(dateStr).toLocaleString(undefined, {
@@ -22,13 +23,19 @@ const History = () => {
 
   useEffect(() => {
     const load = async () => {
-      if (!localStorage.getItem("token")) {
+      if (!isSessionValid()) {
+        clearAuthSession();
         navigate("/login");
         return;
       }
       setIsLoading(true);
-      await Promise.all([getHistory(groupid), getGroup(groupid)]);
-      setIsLoading(false);
+      try {
+        await Promise.all([getHistory(groupid), getGroup(groupid)]);
+      } catch (error) {
+        console.error("Error loading history:", error);
+      } finally {
+        setIsLoading(false);
+      }
     };
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps

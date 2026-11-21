@@ -87,14 +87,20 @@ const RecordState = (props) => {
     }
   };
 
-  const addAllRecord = async (members, amount, note, groupid) => {
+  const addAllRecord = async (members, amount, note, groupid, includeMe = true) => {
     if (!members || members.length === 0) {
       showAlert("This group has no other members to split with", "danger");
       return false;
     }
 
-    // Split evenly between the payer and every other member
-    const splitAmount = amount / (members.length + 1);
+    const divisor = includeMe ? members.length + 1 : members.length;
+    if (divisor <= 0) {
+      showAlert("Select at least one member to split with", "danger");
+      return false;
+    }
+
+    // Split evenly between members (and the payer if includeMe is true)
+    const splitAmount = amount / divisor;
     const roundedAmount = Math.round(splitAmount * 100) / 100;
 
     if (!(roundedAmount > 0)) {

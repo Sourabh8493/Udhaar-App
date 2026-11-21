@@ -1,13 +1,20 @@
 import React, { useContext, useState } from 'react'
 import GroupContext from './GroupContext'
 import AlertContext from './AlertContext'
-import { apiRequest } from '../utils/api'
+import { apiRequest, updateLastActive, clearAuthSession } from '../utils/api'
 
 const GroupState = (props) => {
     const groupsInitial = []
     const [groups, setGroups] = useState(groupsInitial)
 
-    const [currentUser, setCurrentUser] = useState({})
+    const [currentUser, setCurrentUser] = useState(() => {
+        try {
+            const cached = localStorage.getItem("user");
+            return cached ? JSON.parse(cached) : {};
+        } catch {
+            return {};
+        }
+    })
     const [userByEmail, setUserByEmail] = useState({})
 
     const [currentGroup, setCurrentGroup] = useState({members: []})
@@ -27,7 +34,18 @@ const GroupState = (props) => {
     const getUserDetails = async () => {
         try {
             const json = await apiRequest('/api/auth/getUser', { method: 'POST' })
-            setCurrentUser(json || {})
+            if (json) {
+                if (json.authToken) {
+                    localStorage.setItem('token', json.authToken);
+                    updateLastActive();
+                }
+                localStorage.setItem('user', JSON.stringify({
+                    _id: json._id,
+                    name: json.name,
+                    email: json.email
+                }));
+                setCurrentUser(json);
+            }
         } catch (error) {
             showAlert(error.message, 'danger')
         }
@@ -123,7 +141,14 @@ const GroupState = (props) => {
                 method: 'PUT',
                 body: { name },
             })
-            setCurrentUser(json.user || {})
+            if (json && json.user) {
+                localStorage.setItem('user', JSON.stringify({
+                    _id: json.user._id,
+                    name: json.user.name,
+                    email: json.user.email
+                }));
+                setCurrentUser(json.user);
+            }
             showAlert('Profile updated', 'success')
             return true
         } catch (error) {
@@ -149,6 +174,7 @@ const GroupState = (props) => {
     const deleteAccount = async () => {
         try {
             await apiRequest('/api/auth/deleteAccount', { method: 'DELETE' })
+            clearAuthSession()
             showAlert('Account deleted', 'success')
             return true
         } catch (error) {
